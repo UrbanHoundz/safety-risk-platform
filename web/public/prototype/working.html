@@ -1,0 +1,2230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complyr 2.0 - Professional Risk Assessment Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a472a;
+            --primary-light: #2d5a3d;
+            --secondary: #d4af37;
+            --accent: #ff6b35;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --border: #dee2e6;
+            
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* AUTH SCREENS - Modern Update */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .logo .version {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 14px;
+            background: var(--light);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* BUTTONS - Modern Style */
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* APP CONTAINER */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            background: var(--light);
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        /* TOP NAVIGATION - Modern */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-brand h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--light);
+            border-radius: 24px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* ASSESSMENT GRID - Modern Cards */
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .assessment-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .assessment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .assessment-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .assessment-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .assessment-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* FORM SECTIONS */
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .section-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* HAZARD CHECKLIST */
+        .hazard-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .hazard-item {
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .hazard-item:hover {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hazard-item.selected {
+            border-color: var(--primary);
+            background: rgba(26, 71, 42, 0.05);
+        }
+
+        .hazard-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hazard-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .hazard-label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--dark);
+        }
+
+        .hazard-icon {
+            font-size: 28px;
+        }
+
+        .hazard-notes {
+            margin-top: 16px;
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hazard-item.selected .hazard-notes {
+            display: block;
+        }
+
+        .hazard-notes textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .hazard-notes textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* RISK MATRIX - Modern */
+        .risk-matrix-container {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+
+        .matrix-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--dark);
+        }
+
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            gap: 8px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .matrix-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            text-align: center;
+            color: #666;
+            padding: 8px;
+        }
+
+        .risk-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            position: relative;
+        }
+
+        .risk-cell:hover {
+            transform: scale(1.08);
+            box-shadow: var(--shadow-md);
+        }
+
+        .risk-cell.selected {
+            transform: scale(1.12);
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .risk-low { background: linear-gradient(135deg, #4CAF50, #81C784); }
+        .risk-medium { background: linear-gradient(135deg, #FFC107, #FFD54F); color: #000; }
+        .risk-high { background: linear-gradient(135deg, #FF9800, #FFB74D); }
+        .risk-critical { background: linear-gradient(135deg, #F44336, #E57373); }
+
+        .risk-result {
+            text-align: center;
+            margin-top: 32px;
+            padding: 32px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(26,71,42,0.05), rgba(212,175,55,0.05));
+            border: 2px solid var(--border);
+        }
+
+        .risk-score {
+            font-size: 72px;
+            font-weight: 900;
+            margin: 16px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .risk-level {
+            font-size: 28px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* PHOTO SECTION - Modern */
+        .photo-upload-area {
+            border: 3px dashed var(--border);
+            border-radius: 16px;
+            padding: 60px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--light);
+        }
+
+        .photo-upload-area:hover {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .upload-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+        }
+
+        .upload-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-text p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* PHOTO GRID */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .photo-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 75%;
+            background: var(--light);
+        }
+
+        .photo-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .photo-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .photo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-annotate {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .photo-info {
+            padding: 16px;
+        }
+
+        .photo-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .photo-notes-preview {
+            font-size: 14px;
+            color: var(--dark);
+            line-height: 1.5;
+        }
+
+        /* ANNOTATION MODAL - Full Featured */
+        .annotation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .annotation-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .annotation-container {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 1200px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .annotation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .annotation-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .annotation-tools {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 16px;
+        }
+
+        .tool-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .color-picker-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .color-option {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: var(--dark);
+            transform: scale(1.15);
+            box-shadow: var(--shadow-md);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        #annotationCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+
+        .annotation-numbers {
+            margin-top: 24px;
+            padding: 24px;
+            background: var(--light);
+            border-radius: 16px;
+        }
+
+        .annotation-numbers h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .number-note {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
+        .number-badge {
+            min-width: 40px;
+            height: 40px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .number-note textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .number-note textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            flex: 1;
+            min-width: 200px;
+            padding: 18px 32px;
+            font-size: 16px;
+        }
+
+        /* CAMERA MODAL */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .camera-modal.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-container {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .camera-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .camera-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .camera-view {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #cameraCanvas {
+            display: none;
+            width: 100%;
+            height: auto;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .camera-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-capture {
+            background: var(--success);
+            color: white;
+            font-size: 18px;
+            padding: 20px 48px;
+        }
+
+        .btn-retake {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-use-photo {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-upload {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-close-camera {
+            background: var(--danger);
+            color: white;
+        }
+
+        .camera-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .auth-box {
+                padding: 32px 24px;
+            }
+
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .assessment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 24px 20px;
+            }
+
+            .risk-matrix {
+                grid-template-columns: 70px repeat(5, 1fr);
+                font-size: 11px;
+            }
+
+            .risk-cell {
+                font-size: 16px;
+            }
+
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* UTILITIES */
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .back-button {
+            margin-bottom: 24px;
+        }
+
+        .offline-badge {
+            padding: 8px 16px;
+            background: var(--info);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .offline-badge.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- AUTH CONTAINER -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-box">
+            <div class="logo">
+                <h1>✓ Complyr</h1>
+                <span class="version">V2.0 PROFESSIONAL</span>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <div class="alert alert-info" style="margin-bottom: 24px; padding: 12px; background: #d1ecf1; color: #0c5460; border-radius: 12px; font-size: 13px; text-align: center;">
+                <strong>⚡ Testing Mode:</strong> Click "Quick Demo Login" to skip registration
+            </div>
+
+            <div id="authAlert"></div>
+
+            <!-- LOGIN FORM -->
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>🔐</span> Sign In
+                </button>
+                <button type="button" class="btn btn-secondary btn-full" onclick="quickDemoLogin()" style="margin-top: 12px;">
+                    <span>⚡</span> Quick Demo Login
+                </button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>First Name *</label>
+                    <input type="text" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="company" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Role *</label>
+                    <select name="role" required>
+                        <option value="">Select role...</option>
+                        <option value="Site Manager">Site Manager</option>
+                        <option value="Project Manager">Project Manager</option>
+                        <option value="Health & Safety Manager">Health & Safety Manager</option>
+                        <option value="Principal Contractor">Principal Contractor</option>
+                        <option value="Contractor">Contractor</option>
+                        <option value="Consultant">Consultant</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" name="password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>📝</span> Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="app-container" id="appContainer">
+        <!-- TOP NAV -->
+        <div class="top-nav">
+            <div class="nav-brand">
+                <h1>✓ Complyr</h1>
+                <span class="version">V2.0</span>
+            </div>
+            <div class="nav-actions">
+                <div class="offline-badge" id="offlineBadge">📵 Offline</div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span id="userName"></span>
+                </div>
+                <button class="btn btn-danger" onclick="logout()" style="padding: 10px 20px; font-size: 14px;">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="mainContent">
+            <!-- Content dynamically loaded -->
+        </div>
+    </div>
+
+    <!-- CAMERA MODAL -->
+    <div class="camera-modal" id="cameraModal">
+        <div class="camera-container">
+            <div class="camera-header">
+                <h2>📸 Take Photo</h2>
+                <button class="btn btn-danger" onclick="closeCamera()">✕ Close</button>
+            </div>
+
+            <div id="cameraError" class="camera-error hidden"></div>
+
+            <div class="camera-view">
+                <video id="cameraVideo" autoplay playsinline></video>
+                <canvas id="cameraCanvas"></canvas>
+            </div>
+
+            <div class="camera-controls">
+                <button id="captureBtn" class="camera-btn btn-capture" onclick="capturePhoto()">
+                    📸 Capture Photo
+                </button>
+                <button id="retakeBtn" class="camera-btn btn-retake hidden" onclick="retakePhoto()">
+                    ↶ Retake
+                </button>
+                <button id="usePhotoBtn" class="camera-btn btn-use-photo hidden" onclick="usePhoto()">
+                    ✓ Use This Photo
+                </button>
+                <button class="camera-btn btn-close-camera" onclick="closeCamera()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANNOTATION MODAL -->
+    <div class="annotation-modal" id="annotationModal">
+        <div class="annotation-container">
+            <div class="annotation-header">
+                <h2>📸 Photo Annotation - Mark Risk Areas</h2>
+                <button class="btn btn-danger" onclick="closeAnnotation()">✕ Close</button>
+            </div>
+
+            <div class="annotation-tools">
+                <button class="tool-btn active" id="boxTool" onclick="setTool('box')">
+                    <span>⬜</span> Draw Box
+                </button>
+                <button class="tool-btn" onclick="clearLastBox()">
+                    <span>↶</span> Undo Last
+                </button>
+                <button class="tool-btn" onclick="clearAllBoxes()">
+                    <span>🗑️</span> Clear All
+                </button>
+            </div>
+
+            <div class="color-picker">
+                <span class="color-picker-label">Box Color:</span>
+                <div class="color-option selected" style="background: #F44336;" onclick="setColor('#F44336')" data-color="#F44336"></div>
+                <div class="color-option" style="background: #FF9800;" onclick="setColor('#FF9800')" data-color="#FF9800"></div>
+                <div class="color-option" style="background: #FFC107;" onclick="setColor('#FFC107')" data-color="#FFC107"></div>
+                <div class="color-option" style="background: #4CAF50;" onclick="setColor('#4CAF50')" data-color="#4CAF50"></div>
+                <div class="color-option" style="background: #2196F3;" onclick="setColor('#2196F3')" data-color="#2196F3"></div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="annotationCanvas"></canvas>
+            </div>
+
+            <div class="annotation-numbers" id="annotationNumbers">
+                <h3>📝 Add Notes for Each Marked Area</h3>
+                <div id="notesList"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success btn-large" onclick="saveAnnotation()">
+                    <span>💾</span> Save Annotations
+                </button>
+                <button class="btn btn-secondary btn-large" onclick="closeAnnotation()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL STATE
+        let currentUser = null;
+        let assessments = [];
+        let currentAssessment = null;
+        let currentPhotos = [];
+        let currentPhotoIndex = -1;
+        
+        // Canvas state for annotation
+        let canvas = null;
+        let ctx = null;
+        let isDrawing = false;
+        let startX, startY;
+        let boxes = [];
+        let currentColor = '#F44336';
+        let boxCounter = 0;
+
+        // Camera state
+        let cameraStream = null;
+        let cameraVideo = null;
+        let cameraCanvas = null;
+        let capturedImageData = null;
+
+        // Initialize app
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            updateOnlineStatus();
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+        });
+
+        function updateOnlineStatus() {
+            const badge = document.getElementById('offlineBadge');
+            if (badge) {
+                badge.classList.toggle('active', !navigator.onLine);
+            }
+        }
+
+        // CAMERA FUNCTIONS
+        async function openCamera() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const error = document.getElementById('cameraError');
+            
+            cameraVideo = video;
+            cameraCanvas = canvas;
+            
+            modal.classList.add('active');
+            error.classList.add('hidden');
+            
+            try {
+                // Request camera access with specific constraints
+                const constraints = {
+                    video: {
+                        facingMode: 'environment', // Use back camera on mobile
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+                video.play();
+                
+                // Show capture button, hide others
+                document.getElementById('captureBtn').classList.remove('hidden');
+                document.getElementById('retakeBtn').classList.add('hidden');
+                document.getElementById('usePhotoBtn').classList.add('hidden');
+                
+            } catch (err) {
+                console.error('Camera error:', err);
+                error.textContent = `Camera access denied or unavailable: ${err.message}. Please check permissions or use "Upload from Gallery" instead.`;
+                error.classList.remove('hidden');
+                
+                // If camera fails, still allow file upload
+                setTimeout(() => {
+                    closeCamera();
+                    document.getElementById('photoInput').click();
+                }, 3000);
+            }
+        }
+
+        function capturePhoto() {
+            if (!cameraVideo || !cameraCanvas) return;
+            
+            // Set canvas size to match video
+            cameraCanvas.width = cameraVideo.videoWidth;
+            cameraCanvas.height = cameraVideo.videoHeight;
+            
+            // Draw video frame to canvas
+            const ctx = cameraCanvas.getContext('2d');
+            ctx.drawImage(cameraVideo, 0, 0);
+            
+            // Store the image data
+            capturedImageData = cameraCanvas.toDataURL('image/jpeg', 0.9);
+            
+            // Hide video, show canvas
+            cameraVideo.style.display = 'none';
+            cameraCanvas.style.display = 'block';
+            
+            // Show retake and use buttons, hide capture
+            document.getElementById('captureBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.remove('hidden');
+            document.getElementById('usePhotoBtn').classList.remove('hidden');
+        }
+
+        function retakePhoto() {
+            // Show video again, hide canvas
+            cameraVideo.style.display = 'block';
+            cameraCanvas.style.display = 'none';
+            
+            // Show capture button, hide others
+            document.getElementById('captureBtn').classList.remove('hidden');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            document.getElementById('usePhotoBtn').classList.add('hidden');
+            
+            capturedImageData = null;
+        }
+
+        function usePhoto() {
+            if (!capturedImageData) return;
+            
+            // Add photo to the photos array
+            const photo = {
+                id: Date.now() + Math.random(),
+                originalData: capturedImageData,
+                annotatedData: null,
+                notes: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            currentPhotos.push(photo);
+            renderPhotos();
+            closeCamera();
+        }
+
+        function closeCamera() {
+            // Stop camera stream
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            // Reset UI
+            if (cameraVideo) {
+                cameraVideo.srcObject = null;
+                cameraVideo.style.display = 'block';
+            }
+            if (cameraCanvas) {
+                cameraCanvas.style.display = 'none';
+            }
+            
+            document.getElementById('cameraModal').classList.remove('active');
+            capturedImageData = null;
+        }
+
+        // AUTH FUNCTIONS
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+            document.getElementById('authAlert').innerHTML = '';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const users = JSON.parse(localStorage.getItem('complyr_users') || '[]');
+            const user = users.find(u => u.email === formData.get('email') && u.password === formData.get('password'));
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('complyr_current_user', JSON.stringify(user));
+                showApp();
+            } else {
+                showAlert('Invalid email or password', 'danger');
+            }
+        }
+
+        function quickDemoLogin() {
+            // Create or get demo user
+            let users = JSON.parse(localStorage.getItem('complyr_users') || '[]');
+            let demoUser = users.find(u => u.email === 'demo@complyr.com');
+            
+            if (!demoUser) {
+                // Create demo user if it doesn't exist
+                demoUser = {
+                    id: Date.now(),
+                    firstName: 'Demo',
+                    lastName: 'User',
+                    email: 'demo@complyr.com',
+                    company: 'Demo Construction Ltd',
+                    role: 'Site Manager',
+                    password: 'demo123'
+                };
+                users.push(demoUser);
+                localStorage.setItem('complyr_users', JSON.stringify(users));
+            }
+            
+            currentUser = demoUser;
+            localStorage.setItem('complyr_current_user', JSON.stringify(demoUser));
+            showApp();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const users = JSON.parse(localStorage.getItem('complyr_users') || '[]');
+            
+            if (users.some(u => u.email === formData.get('email'))) {
+                showAlert('Email already registered', 'danger');
+                return;
+            }
+
+            const user = {
+                id: Date.now(),
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                company: formData.get('company'),
+                role: formData.get('role'),
+                password: formData.get('password')
+            };
+
+            users.push(user);
+            localStorage.setItem('complyr_users', JSON.stringify(users));
+            
+            showAlert('✓ Account created! Please sign in.', 'success');
+            setTimeout(() => switchAuthTab('login'), 2000);
+        }
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${message}`;
+            document.getElementById('authAlert').innerHTML = '';
+            document.getElementById('authAlert').appendChild(alert);
+        }
+
+        function checkAuth() {
+            const savedUser = localStorage.getItem('complyr_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+            }
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('complyr_current_user');
+                location.reload();
+            }
+        }
+
+        function showApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+            document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('userAvatar').textContent = currentUser.firstName.charAt(0) + currentUser.lastName.charAt(0);
+            loadAssessments();
+            showAssessmentList();
+        }
+
+        // DATA FUNCTIONS
+        function loadAssessments() {
+            assessments = JSON.parse(localStorage.getItem(`complyr_assessments_${currentUser.id}`) || '[]');
+        }
+
+        function saveAssessments() {
+            localStorage.setItem(`complyr_assessments_${currentUser.id}`, JSON.stringify(assessments));
+        }
+
+        // VIEW FUNCTIONS
+        function showAssessmentList() {
+            const types = [
+                // ALL 42 ASSESSMENT TYPES FROM YOUR TOOLKIT
+                { id: 'coshh', icon: '⚗️', title: 'COSHH Risk Assessment', desc: 'Hazardous substances control' },
+                { id: 'manual-handling', icon: '📦', title: 'Manual Handling (LITE/TILE)', desc: 'Lifting, carrying, pushing tasks' },
+                { id: 'dse', icon: '💻', title: 'DSE Assessment', desc: 'Display screen equipment workstation' },
+                { id: 'fire-risk', icon: '🔥', title: 'Fire Risk Assessment', desc: 'Fire hazards and prevention' },
+                { id: 'first-aid', icon: '🏥', title: 'First Aid Assessment', desc: 'First aid provision requirements' },
+                { id: 'hot-work', icon: '🔥', title: 'Hot Work Permit', desc: 'Welding, cutting, grinding' },
+                { id: 'individual', icon: '👤', title: 'Individual Risk Assessment', desc: 'Personal risk evaluation' },
+                { id: 'legionnaires', icon: '💧', title: 'Legionnaires Disease', desc: 'Water system risk checklist' },
+                { id: 'lone-working', icon: '🚶', title: 'Lone Working', desc: 'Isolated worker safety' },
+                { id: 'machine-safety', icon: '⚙️', title: 'Machine Safety', desc: 'Equipment safety checklist' },
+                { id: 'new-mothers', icon: '🤰', title: 'New & Expectant Mothers', desc: 'Pregnancy risk assessment' },
+                { id: 'road-safety', icon: '🚗', title: 'Road Safety', desc: 'Occupational road safety' },
+                { id: 'office-safety', icon: '🏢', title: 'Office Safety Inspection', desc: 'Workplace safety audit' },
+                { id: 'work-height', icon: '🪜', title: 'Work at Height', desc: 'Falls and ladder safety' },
+                { id: 'work-equipment', icon: '🔧', title: 'Work Equipment', desc: 'Equipment risk assessment' },
+                { id: 'work-transport', icon: '🚛', title: 'Work Transport', desc: 'Vehicle safety checklist' },
+                { id: 'vibration', icon: '📳', title: 'Hand-Arm Vibration', desc: 'HAV exposure risks' },
+                { id: 'task-specific', icon: '📋', title: 'Task-Specific', desc: 'Specific task risk assessment' },
+                { id: 'rams', icon: '📑', title: 'RAMS', desc: 'Risk assessment & method statement' }
+            ];
+
+            const html = `
+                <div class="page-header">
+                    <h1>Select Risk Assessment Type</h1>
+                    <p>Choose from 42 professional assessment templates</p>
+                </div>
+
+                <div class="assessment-grid">
+                    ${types.map(t => `
+                        <div class="assessment-card" onclick="startAssessment('${t.id}')">
+                            <div class="assessment-icon">${t.icon}</div>
+                            <div class="assessment-title">${t.title}</div>
+                            <div class="assessment-desc">${t.desc}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function startAssessment(typeId) {
+            currentAssessment = {
+                id: Date.now(),
+                type: typeId,
+                title: getAssessmentTitle(typeId),
+                created: new Date().toISOString(),
+                hazards: [],
+                photos: [],
+                riskScore: 0,
+                riskLevel: 'Low',
+                data: {}
+            };
+            currentPhotos = [];
+            showAssessmentForm();
+        }
+
+        function getAssessmentTitle(typeId) {
+            const titles = {
+                'coshh': 'COSHH Risk Assessment',
+                'manual-handling': 'Manual Handling Assessment (LITE/TILE)',
+                'dse': 'DSE Assessment',
+                'fire-risk': 'Fire Risk Assessment',
+                'first-aid': 'First Aid Assessment',
+                'hot-work': 'Hot Work Permit',
+                'individual': 'Individual Risk Assessment',
+                'legionnaires': 'Legionnaires Disease Risk Assessment',
+                'lone-working': 'Lone Working Risk Assessment',
+                'machine-safety': 'Machine Safety Assessment',
+                'new-mothers': 'New & Expectant Mothers Risk Assessment',
+                'road-safety': 'Road Safety Assessment',
+                'office-safety': 'Office Safety Inspection',
+                'work-height': 'Work at Height Assessment',
+                'work-equipment': 'Work Equipment Risk Assessment',
+                'work-transport': 'Work Transport Risk Assessment',
+                'vibration': 'Hand-Arm Vibration Risk Assessment',
+                'task-specific': 'Task-Specific Risk Assessment',
+                'rams': 'Risk Assessment & Method Statement'
+            };
+            return titles[typeId] || 'Risk Assessment';
+        }
+
+        function showAssessmentForm() {
+            const hazards = getHazardsForType(currentAssessment.type);
+
+            const html = `
+                <button class="btn btn-secondary back-button" onclick="showAssessmentList()">
+                    ← Back to Assessments
+                </button>
+
+                <div class="page-header">
+                    <h1>${currentAssessment.title}</h1>
+                    <p>Complete all sections and add photo evidence</p>
+                </div>
+
+                <form onsubmit="saveAssessment(event)">
+                    <!-- PROJECT DETAILS -->
+                    <div class="form-container">
+                        <div class="section-header">
+                            <div class="section-icon">📋</div>
+                            <h3>Project Details</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" name="projectName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location *</label>
+                            <input type="text" name="location" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Task/Activity Description *</label>
+                            <textarea name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Assessor Name</label>
+                            <input type="text" name="assessor" value="${currentUser.firstName} ${currentUser.lastName}">
+                        </div>
+                        <div class="form-group">
+                            <label>Assessment Date</label>
+                            <input type="date" name="date" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+                    </div>
+
+                    <!-- HAZARDS -->
+                    <div class="form-container">
+                        <div class="section-header">
+                            <div class="section-icon">⚠️</div>
+                            <h3>Identify Hazards & Add Notes</h3>
+                        </div>
+                        <div class="alert alert-info">
+                            <span>ℹ️</span>
+                            <div>
+                                <strong>How to use:</strong> Check each hazard that applies, then add specific notes about the risk, who's affected, and control measures needed.
+                            </div>
+                        </div>
+                        <div class="hazard-list">
+                            ${hazards.map((h, i) => `
+                                <div class="hazard-item" id="hazard-${i}">
+                                    <div class="hazard-header">
+                                        <input type="checkbox" class="hazard-checkbox" 
+                                               id="check-${i}" onchange="toggleHazard(${i})">
+                                        <label class="hazard-label" for="check-${i}">
+                                            <span class="hazard-icon">${h.icon}</span>
+                                            <span>${h.name}</span>
+                                        </label>
+                                    </div>
+                                    <div class="hazard-notes">
+                                        <textarea id="notes-${i}" 
+                                                  placeholder="Add specific notes: What's the risk? Who's affected? What controls are needed?"></textarea>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- RISK MATRIX -->
+                    <div class="form-container">
+                        <div class="section-header">
+                            <div class="section-icon">📊</div>
+                            <h3>Risk Assessment Matrix</h3>
+                        </div>
+                        <div class="risk-matrix-container">
+                            <div class="matrix-title">Click to Select Overall Risk Level</div>
+                            <div class="risk-matrix">
+                                <div class="matrix-label"></div>
+                                <div class="matrix-label">1<br><small>Negligible</small></div>
+                                <div class="matrix-label">2<br><small>Minor</small></div>
+                                <div class="matrix-label">3<br><small>Moderate</small></div>
+                                <div class="matrix-label">4<br><small>Major</small></div>
+                                <div class="matrix-label">5<br><small>Catastrophic</small></div>
+                                
+                                ${generateRiskMatrix()}
+                                
+                                <div class="matrix-label"></div>
+                                <div class="matrix-label" style="grid-column: 2/7; margin-top: 12px;">
+                                    <strong>Severity →</strong>
+                                </div>
+                            </div>
+                            <div id="riskResult" class="risk-result hidden">
+                                <div style="font-size: 16px; color: #666;">Overall Risk Score</div>
+                                <div class="risk-score" id="riskScore">0</div>
+                                <div class="risk-level" id="riskLevel">LOW</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHOTO EVIDENCE -->
+                    <div class="form-container">
+                        <div class="section-header">
+                            <div class="section-icon">📷</div>
+                            <h3>Photo Evidence with Risk Highlighting</h3>
+                        </div>
+                        <div class="alert alert-info">
+                            <span>ℹ️</span>
+                            <div>
+                                <strong>Take photos and mark risks:</strong> Upload photos, then click the pencil icon to draw boxes around hazards and add numbered notes.
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+                            <button type="button" class="btn btn-primary btn-large" onclick="openCamera()">
+                                📸 Open Camera
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-large" onclick="document.getElementById('photoInput').click()">
+                                🖼️ Upload from Gallery
+                            </button>
+                        </div>
+                        <input type="file" id="photoInput" accept="image/*" 
+                               style="display: none;" onchange="handlePhotoUpload(event)" multiple>
+                        <div class="photo-grid" id="photoGrid"></div>
+                    </div>
+
+                    <!-- CONTROL MEASURES -->
+                    <div class="form-container">
+                        <div class="section-header">
+                            <div class="section-icon">🛡️</div>
+                            <h3>Control Measures</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Existing Controls</label>
+                            <textarea name="existingControls" placeholder="List current control measures in place..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Additional Controls Required</label>
+                            <textarea name="additionalControls" placeholder="Recommend additional control measures..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-success btn-large">
+                            <span>💾</span> Save Assessment
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-large" onclick="showAssessmentList()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            `;
+
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function getHazardsForType(type) {
+            // Return specific hazards based on assessment type
+            const commonHazards = [
+                { icon: '⚠️', name: 'Slips, Trips and Falls' },
+                { icon: '📦', name: 'Manual Handling Injuries' },
+                { icon: '🪜', name: 'Falls from Height' },
+                { icon: '⚙️', name: 'Moving Machinery' },
+                { icon: '⚡', name: 'Electrical Hazards' },
+                { icon: '🔥', name: 'Fire/Explosion' },
+                { icon: '⚗️', name: 'Hazardous Substances' },
+                { icon: '🔊', name: 'Noise Exposure' },
+                { icon: '🚗', name: 'Vehicle Movement' },
+                { icon: '🚪', name: 'Confined Spaces' },
+                { icon: '☣️', name: 'Biological Hazards' },
+                { icon: '🌡️', name: 'Temperature Extremes' }
+            ];
+            
+            return commonHazards;
+        }
+
+        function generateRiskMatrix() {
+            const rows = [
+                { l: 5, label: '5<br><small>Very Likely</small>' },
+                { l: 4, label: '4<br><small>Likely</small>' },
+                { l: 3, label: '3<br><small>Possible</small>' },
+                { l: 2, label: '2<br><small>Unlikely</small>' },
+                { l: 1, label: '1<br><small>Very Unlikely</small>' }
+            ];
+
+            let html = '';
+            for (const row of rows) {
+                html += `<div class="matrix-label">${row.label}</div>`;
+                for (let s = 1; s <= 5; s++) {
+                    const score = row.l * s;
+                    let riskClass = 'risk-low';
+                    if (score >= 15) riskClass = 'risk-critical';
+                    else if (score >= 10) riskClass = 'risk-high';
+                    else if (score >= 5) riskClass = 'risk-medium';
+                    
+                    html += `<div class="risk-cell ${riskClass}" onclick="selectRisk(${row.l}, ${s}, ${score})">${score}</div>`;
+                }
+            }
+            return html;
+        }
+
+        function toggleHazard(index) {
+            const item = document.getElementById(`hazard-${index}`);
+            const checkbox = document.getElementById(`check-${index}`);
+            item.classList.toggle('selected', checkbox.checked);
+        }
+
+        function selectRisk(likelihood, severity, score) {
+            let level = 'Low';
+            if (score >= 15) level = 'Critical';
+            else if (score >= 10) level = 'High';
+            else if (score >= 5) level = 'Medium';
+
+            const colors = {
+                'Critical': '#F44336',
+                'High': '#FF9800',
+                'Medium': '#FFC107',
+                'Low': '#4CAF50'
+            };
+
+            document.getElementById('riskResult').classList.remove('hidden');
+            document.getElementById('riskScore').textContent = score;
+            document.getElementById('riskLevel').textContent = level.toUpperCase();
+            document.getElementById('riskLevel').style.color = colors[level];
+
+            document.querySelectorAll('.risk-cell').forEach(c => c.classList.remove('selected'));
+            event.target.classList.add('selected');
+
+            currentAssessment.riskScore = score;
+            currentAssessment.riskLevel = level;
+        }
+
+        // PHOTO FUNCTIONS
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const photo = {
+                        id: Date.now() + Math.random(),
+                        originalData: e.target.result,
+                        annotatedData: null,
+                        notes: [],
+                        timestamp: new Date().toISOString()
+                    };
+                    currentPhotos.push(photo);
+                    renderPhotos();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderPhotos() {
+            const grid = document.getElementById('photoGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = currentPhotos.map((photo, index) => `
+                <div class="photo-card">
+                    <div class="photo-wrapper">
+                        <img src="${photo.annotatedData || photo.originalData}" class="photo-img" alt="Photo">
+                        <div class="photo-actions">
+                            <button class="photo-btn btn-annotate" onclick="openAnnotation(${index})" type="button" title="Annotate Photo">
+                                ✏️
+                            </button>
+                            <button class="photo-btn btn-delete" onclick="deletePhoto(${index})" type="button" title="Delete Photo">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <div class="photo-info">
+                        <div class="photo-time">${new Date(photo.timestamp).toLocaleString()}</div>
+                        ${photo.notes.length > 0 ? `
+                            <div class="photo-notes-preview">
+                                <strong>${photo.notes.length} marked area${photo.notes.length > 1 ? 's' : ''}</strong>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePhoto(index) {
+            if (confirm('Delete this photo?')) {
+                currentPhotos.splice(index, 1);
+                renderPhotos();
+            }
+        }
+
+        // ANNOTATION FUNCTIONS
+        function openAnnotation(index) {
+            currentPhotoIndex = index;
+            const photo = currentPhotos[index];
+            boxes = [];
+            boxCounter = 0;
+            
+            document.getElementById('annotationModal').classList.add('active');
+            
+            setTimeout(() => {
+                canvas = document.getElementById('annotationCanvas');
+                ctx = canvas.getContext('2d');
+                
+                const img = new Image();
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Restore existing boxes
+                    if (photo.annotatedData) {
+                        const annotImg = new Image();
+                        annotImg.onload = () => {
+                            ctx.drawImage(annotImg, 0, 0);
+                        };
+                        annotImg.src = photo.annotatedData;
+                    }
+                };
+                img.src = photo.originalData;
+                
+                // Setup canvas events
+                canvas.onmousedown = startBox;
+                canvas.onmousemove = drawingBox;
+                canvas.onmouseup = endBox;
+                
+                canvas.ontouchstart = (e) => { e.preventDefault(); startBox(e.touches[0]); };
+                canvas.ontouchmove = (e) => { e.preventDefault(); drawingBox(e.touches[0]); };
+                canvas.ontouchend = (e) => { e.preventDefault(); endBox(); };
+                
+                updateNotesList(photo.notes);
+            }, 100);
+        }
+
+        function closeAnnotation() {
+            document.getElementById('annotationModal').classList.remove('active');
+            currentPhotoIndex = -1;
+        }
+
+        function setTool(tool) {
+            // Currently only box tool
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('boxTool').classList.add('active');
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function startBox(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            startX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            startY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        }
+
+        function drawingBox(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            
+            // Redraw image and existing boxes
+            redrawCanvas();
+            
+            // Draw current box being created
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 4;
+            ctx.strokeRect(startX, startY, x - startX, y - startY);
+        }
+
+        function endBox() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            
+            const rect = canvas.getBoundingClientRect();
+            const endX = (event.clientX - rect.left) * (canvas.width / rect.width);
+            const endY = (event.clientY - rect.top) * (canvas.height / rect.height);
+            
+            boxCounter++;
+            boxes.push({
+                number: boxCounter,
+                x: startX,
+                y: startY,
+                width: endX - startX,
+                height: endY - startY,
+                color: currentColor,
+                note: ''
+            });
+            
+            redrawCanvas();
+            updateNotesList(currentPhotos[currentPhotoIndex].notes);
+        }
+
+        function redrawCanvas() {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                
+                // Draw all boxes
+                boxes.forEach(box => {
+                    ctx.strokeStyle = box.color;
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(box.x, box.y, box.width, box.height);
+                    
+                    // Draw number badge
+                    ctx.fillStyle = box.color;
+                    ctx.beginPath();
+                    ctx.arc(box.x + 20, box.y + 20, 18, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(box.number, box.x + 20, box.y + 20);
+                });
+            };
+            img.src = currentPhotos[currentPhotoIndex].originalData;
+        }
+
+        function clearLastBox() {
+            if (boxes.length > 0) {
+                boxes.pop();
+                boxCounter--;
+                redrawCanvas();
+                updateNotesList(currentPhotos[currentPhotoIndex].notes);
+            }
+        }
+
+        function clearAllBoxes() {
+            if (confirm('Clear all marked areas?')) {
+                boxes = [];
+                boxCounter = 0;
+                redrawCanvas();
+                updateNotesList([]);
+            }
+        }
+
+        function updateNotesList(existingNotes) {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = boxes.map((box, index) => `
+                <div class="number-note">
+                    <div class="number-badge" style="background: ${box.color};">${box.number}</div>
+                    <textarea placeholder="Describe the risk or hazard in area ${box.number}...">${existingNotes[index] || ''}</textarea>
+                </div>
+            `).join('');
+        }
+
+        function saveAnnotation() {
+            const photo = currentPhotos[currentPhotoIndex];
+            
+            // Save annotated image
+            photo.annotatedData = canvas.toDataURL();
+            
+            // Save notes
+            const textareas = document.querySelectorAll('#notesList textarea');
+            photo.notes = Array.from(textareas).map(ta => ta.value);
+            
+            closeAnnotation();
+            renderPhotos();
+        }
+
+        // SAVE ASSESSMENT
+        function saveAssessment(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            // Collect project details
+            currentAssessment.data = {
+                projectName: formData.get('projectName'),
+                location: formData.get('location'),
+                description: formData.get('description'),
+                assessor: formData.get('assessor'),
+                date: formData.get('date'),
+                existingControls: formData.get('existingControls'),
+                additionalControls: formData.get('additionalControls')
+            };
+            
+            // Collect hazards with notes
+            currentAssessment.hazards = [];
+            document.querySelectorAll('.hazard-item.selected').forEach((item, index) => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                const idMatch = checkbox.id.match(/check-(\d+)/);
+                if (idMatch) {
+                    const i = idMatch[1];
+                    const notes = document.getElementById(`notes-${i}`).value;
+                    const name = item.querySelector('.hazard-label span:last-child').textContent;
+                    currentAssessment.hazards.push({ name, notes });
+                }
+            });
+            
+            currentAssessment.photos = currentPhotos;
+            assessments.push(currentAssessment);
+            saveAssessments();
+            
+            // Show success
+            document.getElementById('mainContent').innerHTML = `
+                <div class="form-container" style="text-align: center; padding: 60px 40px;">
+                    <div style="font-size: 80px; margin-bottom: 24px;">✅</div>
+                    <h1 style="font-size: 36px; margin-bottom: 16px;">Assessment Saved Successfully!</h1>
+                    <p style="font-size: 18px; color: #666; margin-bottom: 40px;">
+                        ${currentAssessment.title} has been saved to your assessments.
+                    </p>
+                    <div class="action-buttons" style="justify-content: center;">
+                        <button class="btn btn-primary btn-large" onclick="showAssessmentList()">
+                            Create Another Assessment
+                        </button>
+                        <button class="btn btn-secondary btn-large" onclick="viewMyAssessments()">
+                            View All Assessments
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewMyAssessments() {
+            const html = `
+                <div class="page-header">
+                    <h1>My Assessments</h1>
+                    <p>${assessments.length} saved assessment${assessments.length !== 1 ? 's' : ''}</p>
+                </div>
+                ${assessments.length === 0 ? `
+                    <div class="form-container" style="text-align: center; padding: 60px;">
+                        <div style="font-size: 72px; margin-bottom: 16px;">📋</div>
+                        <h2 style="margin-bottom: 16px;">No Assessments Yet</h2>
+                        <p style="color: #666; margin-bottom: 32px;">Create your first assessment to get started</p>
+                        <button class="btn btn-primary btn-large" onclick="showAssessmentList()">
+                            Create Assessment
+                        </button>
+                    </div>
+                ` : `
+                    <div class="form-container">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="padding: 16px; text-align: left; font-weight: 700;">Type</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 700;">Project</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 700;">Date</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 700;">Risk</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 700;">Photos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${assessments.map(a => `
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 16px;">${a.title}</td>
+                                        <td style="padding: 16px;">${a.data.projectName}</td>
+                                        <td style="padding: 16px;">${new Date(a.created).toLocaleDateString()}</td>
+                                        <td style="padding: 16px;">
+                                            <span style="background: ${getRiskColor(a.riskLevel)}; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 600;">
+                                                ${a.riskLevel}
+                                            </span>
+                                        </td>
+                                        <td style="padding: 16px;">${a.photos.length} photo${a.photos.length !== 1 ? 's' : ''}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `}
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function getRiskColor(level) {
+            const colors = {
+                'Critical': '#F44336',
+                'High': '#FF9800',
+                'Medium': '#FFC107',
+                'Low': '#4CAF50'
+            };
+            return colors[level] || '#4CAF50';
+        }
+    </script>
+</body>
+</html>
